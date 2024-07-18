@@ -3,38 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Express 서버 통신</title>
+    <title>물자관리 화면</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 50px;
+            margin: 20px;
         }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
+        .container {
+            width: 600px;
+            margin: 0 auto;
+        }
+        .btn-container {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .btn-container button {
+            flex: 1;
+            padding: 10px;
+            margin-right: 10px;
             cursor: pointer;
         }
-        #response {
-            margin-top: 20px;
-            font-size: 18px;
-            color: #333;
+        .btn-container button:last-child {
+            margin-right: 0;
+        }
+        #data-display {
+            width: 100%;
+            height: 150px;
+            margin-bottom: 20px;
+            background-color: #e0e0e0;
+            padding: 10px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        .form-container {
+            margin-bottom: 20px;
+        }
+        .form-container label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-container input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+        .form-container button {
+            width: 100%;
+            padding: 10px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <h1>Express 서버 통신</h1>
-    <button onclick="fetchData()">서버에 요청 보내기</button>
-    <div id="response"></div>
+    <div class="container">
+        <div class="btn-container">
+            <button onclick="fetchData()">조회</button>
+            <button onclick="fetchDbData()">DB 데이터 조회</button>
+        </div>
+        <div id="data-display"></div>
+        <div class="form-container">
+            <h3>상품 입고</h3>
+            <label for="product-name">상품명</label>
+            <input type="text" id="product-name" placeholder="상품명을 입력하세요">
+            <label for="product-quantity">상품 수량</label>
+            <input type="number" id="product-quantity" placeholder="상품 수량을 입력하세요">
+            <button onclick="submitProduct()">입고</button>
+        </div>
+    </div>
 
     <script>
         async function fetchData() {
             try {
-                const response = await fetch('/api/hello');
+                const response = await fetch('/api/getData');
                 const data = await response.json();
-                document.getElementById('response').textContent = data.message;
+                document.getElementById('data-display').textContent = JSON.stringify(data, null, 2);
             } catch (error) {
-                document.getElementById('response').textContent = '오류 발생: ' + error.message;
+                document.getElementById('data-display').textContent = '오류 발생: ' + error.message;
+            }
+        }
+
+        async function fetchDbData() {
+            try {
+                const response = await fetch('/api/getDbData');
+                const data = await response.json();
+                document.getElementById('data-display').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('data-display').textContent = '오류 발생: ' + error.message;
+            }
+        }
+
+        async function submitProduct() {
+            const productName = document.getElementById('product-name').value;
+            const productQuantity = document.getElementById('product-quantity').value;
+
+            try {
+                const response = await fetch('/api/submitProduct', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name: productName, quantity: productQuantity }),
+                });
+
+                const result = await response.json();
+                document.getElementById('data-display').textContent = JSON.stringify(result, null, 2);
+            } catch (error) {
+                document.getElementById('data-display').textContent = '오류 발생: ' + error.message;
             }
         }
     </script>
