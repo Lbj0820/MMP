@@ -10,9 +10,6 @@ app.get('/api/getData', (req, res) => {
     res.json({ message: '조회 데이터' });
 });
 
-app.get('/api/getDbData', (req, res) => {
-    res.json({ message: 'DB 데이터 조회' });
-});
 
 app.post('/api/submitProduct', (req, res) => {
     const { name, quantity } = req.body;

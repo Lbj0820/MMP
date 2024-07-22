@@ -59,7 +59,7 @@
     <div class="container">
         <div class="btn-container">
             <button onclick="fetchData()">조회</button>
-            <button onclick="fetchDbData()">DB 데이터 조회</button>
+            
         </div>
         <div id="data-display"></div>
         <div class="form-container">
@@ -83,15 +83,7 @@
             }
         }
 
-        async function fetchDbData() {
-            try {
-                const response = await fetch('/api/getDbData');
-                const data = await response.json();
-                document.getElementById('data-display').textContent = JSON.stringify(data, null, 2);
-            } catch (error) {
-                document.getElementById('data-display').textContent = '오류 발생: ' + error.message;
-            }
-        }
+       
 
         async function submitProduct() {
             const productName = document.getElementById('product-name').value;
