@@ -64,6 +64,8 @@
         <div id="data-display"></div>
         <div class="form-container">
             <h3>상품 입고</h3>
+            <label for="product-id">상품id</label>
+            <input type="text" id="product-id" placeholder="상품명을 입력하세요">
             <label for="product-name">상품명</label>
             <input type="text" id="product-name" placeholder="상품명을 입력하세요">
             <label for="product-quantity">상품 수량</label>
@@ -86,6 +88,7 @@
        
 
         async function submitProduct() {
+            const productId = document.getElementById('product-id').value; 
             const productName = document.getElementById('product-name').value;
             const productQuantity = document.getElementById('product-quantity').value;
 
@@ -95,7 +98,7 @@
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ name: productName, quantity: productQuantity }),
+                    body: JSON.stringify({ id: productId, name: productName, quantity: productQuantity }),
                 });
 
                 const result = await response.json();
