@@ -1,10 +1,28 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const app = express();
-const port = 3000;
+const express       = require('express');
+const mysql         = require('mysql2');
+const bodyParser    = require('body-parser');
+const app           = express();
+const port          = 3000;
+
+const connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: '12345678',
+    database: 'MMP'
+});
 
 app.use(express.static('public'));
 app.use(bodyParser.json());
+
+// 데이터베이스 연결
+connection.connect((err) => {
+    if (err) {
+        console.error('Database connection failed: ' + err.stack);
+        return;
+    }
+    console.log('Connected to database.');
+});
+
 
 app.get('/api/getData', (req, res) => {
     res.json({ message: '조회 데이터' });
