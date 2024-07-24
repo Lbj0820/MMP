@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>물자관리 화면</title>
+    <title>물자 관리 - 조회</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,17 +14,7 @@
             margin: 0 auto;
         }
         .btn-container {
-            display: flex;
             margin-bottom: 20px;
-        }
-        .btn-container button {
-            flex: 1;
-            padding: 10px;
-            margin-right: 10px;
-            cursor: pointer;
-        }
-        .btn-container button:last-child {
-            margin-right: 0;
         }
         #data-display {
             width: 100%;
@@ -35,74 +25,23 @@
             box-sizing: border-box;
             overflow-y: auto;
         }
-        .form-container {
-            margin-bottom: 20px;
-        }
-        .form-container label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        .form-container input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            box-sizing: border-box;
-        }
-        .form-container button {
-            width: 100%;
-            padding: 10px;
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="btn-container">
             <button onclick="fetchData()">조회</button>
-            
+            <a href="input.html"><button>입고 페이지로 이동</button></a>
         </div>
         <div id="data-display"></div>
-        <div class="form-container">
-            <h3>상품 입고</h3>
-            <label for="product-id">상품id</label>
-            <input type="text" id="product-id" placeholder="상품명을 입력하세요">
-            <label for="product-name">상품명</label>
-            <input type="text" id="product-name" placeholder="상품명을 입력하세요">
-            <label for="product-quantity">상품 수량</label>
-            <input type="number" id="product-quantity" placeholder="상품 수량을 입력하세요">
-            <button onclick="submitProduct()">입고</button>
-        </div>
     </div>
 
     <script>
         async function fetchData() {
             try {
-                const response = await fetch('/api/getData');
+                const response = await fetch('/api/products');
                 const data = await response.json();
                 document.getElementById('data-display').textContent = JSON.stringify(data, null, 2);
-            } catch (error) {
-                document.getElementById('data-display').textContent = '오류 발생: ' + error.message;
-            }
-        }
-
-       
-
-        async function submitProduct() {
-            const productId = document.getElementById('product-id').value; 
-            const productName = document.getElementById('product-name').value;
-            const productQuantity = document.getElementById('product-quantity').value;
-
-            try {
-                const response = await fetch('/api/submitProduct', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ id: productId, name: productName, quantity: productQuantity }),
-                });
-
-                const result = await response.json();
-                document.getElementById('data-display').textContent = JSON.stringify(result, null, 2);
             } catch (error) {
                 document.getElementById('data-display').textContent = '오류 발생: ' + error.message;
             }
