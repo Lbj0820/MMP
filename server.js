@@ -57,18 +57,10 @@ app.get('/api/getData', async (req, res) => {
     }
 });
 
+// 조회 업그레이드
 app.get('/api/searchItems', async (req, res) => {
-    //console.log(req.body);
-    //const {id ,name, received_by, quantity } = req.body;
-
-    // 클라이언트에서 받아올 더미 데이터 
-    const tmpdict = {
-        "id": "",
-        "name": "",
-        "received_by": "John Doe",
-        "quantity": 0
-    };
-    const {id ,name, received_by, quantity } = tmpdict;
+    console.log(req.body);
+    const {id ,name, received_by, quantity } = req.body;
 
     let connection;
     try {
