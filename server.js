@@ -1,8 +1,8 @@
 const express       = require('express');
 const oracledb      = require('oracledb');
 const bodyParser    = require('body-parser');
-const app           = express(); 
-const port          = 3000;  // 웹서버 포트
+const app           = express();
+const port          = 3000;  // 웹서버 포트 
 
 // Oracle DB 설정
 const dbConfig = {
@@ -59,20 +59,29 @@ app.get('/api/getData', async (req, res) => {
 
 
 app.post('/api/submitProduct', async (req, res) => {
-    const { name, quantity } = req.body;
+    const {id ,name, quantity } = req.body;
 
     let connection;
     try {
         connection = await oracledb.getConnection(dbConfig); // DB 연결
         console.log('Connection to Oracle DB was successful!');
 
-        // 바인드 변수를 사용한 쿼리
-        const sql = `INSERT INTO Inventory (item_name, quantity) VALUES (:name, :quantity)`;
         // 바인딩 될 변수
         const binds = {
-            name: name,
-            quantity: quantity
+            id:         id,
+            name:       name,
+            quantity:   quantity
         };
+
+        // 바인드 변수를 사용한 쿼리
+        const sql = `
+            SELECT CASE
+            WHEN EXISTS (SELECT 1 FROM Inventory WHERE item_id = :id) 
+                THEN 'TRUE'
+                ELSE 'FALSE'
+            END AS item_exists
+            FROM dual;
+        `;
 
         const result = await connection.execute(
             sql,       // SQL 쿼리
