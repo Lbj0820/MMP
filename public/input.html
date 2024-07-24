@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>물자 관리 - 입고</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            width: 800px;
+            margin: 0 auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        .form-container {
+            margin-bottom: 20px;
+        }
+        .form-container label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-container input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+        .form-container button {
+            width: 100%;
+            padding: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>물자 관리 - 입고</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>선택</th>
+                    <th>ID</th>
+                    <th>상품명</th>
+                    <th>회사 이름</th>
+                    <th>현재 수량</th>
+                    <th>입고 수량</th>
+                </tr>
+            </thead>
+            <tbody id="product-table">
+                <!-- 제품 목록이 여기에 추가됩니다 -->
+            </tbody>
+        </table>
+        <button onclick="submitSelectedProducts()">입고</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('/api/products');
+                const products = await response.json();
+                const tableBody = document.getElementById('product-table');
+                products.forEach(product => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><input type="checkbox" data-id="${product.id}"></td>
+                        <td>${product.id}</td>
+                        <td>${product.name}</td>
+                        <td>${product.company}</td>
+                        <td>${product.quantity}</td>
+                        <td><input type="number" data-id="${product.id}" min="0"></td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('데이터를 불러오는 중 오류 발생:', error);
+            }
+        });
+
+        async function submitSelectedProducts() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            const updates = [];
+            checkboxes.forEach(checkbox => {
+                const id = checkbox.getAttribute('data-id');
+                const quantityInput = document.querySelector(`input[type="number"][data-id="${id}"]`);
+                const quantity = parseInt(quantityInput.value, 10);
+                if (!isNaN(quantity)) {
+                    updates.push({ id, quantity });
+                }
+            });
+
+            try {
+                const response = await fetch('/api/update-quantity', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(updates),
+                });
+
+                const result = await response.json();
+                alert(result.message);
+            } catch (error) {
+                alert('오류 발생: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
