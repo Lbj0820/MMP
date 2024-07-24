@@ -57,6 +57,54 @@ app.get('/api/getData', async (req, res) => {
     }
 });
 
+app.get('/api/searchItems', async (req, res) => {
+    //console.log(req.body);
+    //const {id ,name, received_by, quantity } = req.body;
+
+    // 클라이언트에서 받아올 더미 데이터 
+    const tmpdict = {
+        "id": "",
+        "name": "",
+        "received_by": "John Doe",
+        "quantity": 0
+    };
+    const {id ,name, received_by, quantity } = tmpdict;
+
+    let connection;
+    try {
+        connection = await oracledb.getConnection(dbConfig); // DB 연결
+        console.log('Connection to Oracle DB was successful!');
+
+        // 바인드 변수를 사용한 쿼리
+        const sql = `SELECT * FROM Inventory WHERE 1=1`;
+
+        //조건에 따른
+        if (id)             sql += `item_id = ${id}`;
+        if (name)           sql += `item_name = ${name}`;
+        if (received_by)    sql += `received_by = ${received_by}`;
+        if (quantity != 0)  sql += `quantity = ${quantity}`;
+
+        const result = await connection.execute(sql);
+        
+        res.json(result.rows);
+
+    } catch (err) { // 오류일경우
+        console.error('Error connecting to Oracle DB', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+
+    } finally { // 항상 마지막에 실행 
+        if (connection) {
+            try {
+                await connection.close();
+            } catch (err) {
+                console.error('Error closing the connection', err);
+            }
+        }
+    }
+});
+
+
+
 
 app.post('/api/submitProduct', async (req, res) => {
     const {id ,name, quantity } = req.body;
