@@ -110,9 +110,9 @@
             const quantity = document.getElementById('quantity').value;
 
             const params = new URLSearchParams({ item_id, item_name, received_by, quantity });
-            console.log(`/api/searchItems?${params.toString()}`);
             const response = await fetch(`/api/searchItems?${params.toString()}`);
             const products = await response.json();
+            console.log(products);
             const tableBody = document.getElementById('product-table');
             tableBody.innerHTML = ''; 
 
