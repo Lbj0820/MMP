@@ -61,6 +61,7 @@ app.get('/api/getData', async (req, res) => {
 app.get('/api/searchItems', async (req, res) => {
     console.log(req.query);
     const {id ,name, received_by, quantity } = req.query;
+    console.log(id  ,name, received_by, quantity);
 
     let connection;
     try {

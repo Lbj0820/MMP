@@ -110,7 +110,6 @@
             const quantity = document.getElementById('quantity').value;
 
             const params = new URLSearchParams({ item_id, item_name, received_by, quantity });
-            
             const response = await fetch(`/api/searchItems?${params.toString()}`);
             const products = await response.json();
             console.log(products);
