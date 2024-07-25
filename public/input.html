@@ -69,18 +69,18 @@
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             try {
-                const response = await fetch('/api/products');
+                const response = await fetch('/api/getData');
                 const products = await response.json();
                 const tableBody = document.getElementById('product-table');
                 products.forEach(product => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td><input type="checkbox" data-id="${product.id}"></td>
-                        <td>${product.id}</td>
-                        <td>${product.name}</td>
-                        <td>${product.company}</td>
-                        <td>${product.quantity}</td>
-                        <td><input type="number" data-id="${product.id}" min="0"></td>
+                        <td><input type="checkbox" data-id="${product[0]}"></td>
+                        <td>${product[0]}</td>
+                        <td>${product[1]}</td>
+                        <td>${product[2]}</td>
+                        <td>${product[3]}</td>
+                        <td><input type="number" data-id="${product[0]}" min="0"></td>
                     `;
                     tableBody.appendChild(row);
                 });

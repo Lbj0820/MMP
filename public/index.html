@@ -39,9 +39,9 @@
     <script>
         async function fetchData() {
             try {
-                const response = await fetch('/api/products');
+                const response = await fetch('/api/getData');
                 const data = await response.json();
-                document.getElementById('data-display').textContent = JSON.stringify(data, null, 2);
+                document.getElementById('data-display').textContent = JSON.stringify(data, null, 4);
             } catch (error) {
                 document.getElementById('data-display').textContent = '오류 발생: ' + error.message;
             }
