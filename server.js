@@ -59,8 +59,8 @@ app.get('/api/getData', async (req, res) => {
 
 // 조회 업그레이드
 app.get('/api/searchItems', async (req, res) => {
-    console.log(req.body);
-    const {id ,name, received_by, quantity } = req.body;
+    console.log(req.query);
+    const {id ,name, received_by, quantity } = req.query;
 
     let connection;
     try {
@@ -95,6 +95,63 @@ app.get('/api/searchItems', async (req, res) => {
     }
 });
 
+app.post('/api/update-quantity', async (req, res) => {
+    
+    let connection;
+
+    try {
+        connection = await oracledb.getConnection(dbConfig); // DB 연결
+        console.log('Connection to Oracle DB was successful!');
+       
+        // 바인드 변수를 사용한 쿼리
+        const sql = `
+            UPDATE Inventory
+            SET quantity = quantity + :quantity
+            WHERE item_id = :id
+        `;
+
+        // 쿼리에 바인딩 될 변수
+        const binds = req.body.map(
+            row => ({ 
+                id : row.id ,           //  id ->    :id
+                quantity : row.quantity //  quntity -> : quantity
+            })
+        );
+        
+        // 쿼리를 실행할때 사용될 옵션
+        const options = {
+            autoCommit: true, // 자동 저장
+            bindDefs: { 
+                quantity: { type: oracledb.NUMBER },
+                id: { type: oracledb.STRING, maxSize: 30 }
+            }
+        }
+
+        // 쿼리 실행
+        const result = await connection.executeMany(
+            sql,       // 실행할 쿼리
+            binds,     // 쿼리에 바인딩할 객체
+            options    // 옵션
+        );
+        
+        console.log('Query Results:', result.rowsAffected);
+        res.json({ message: `${result.rowsAffected}개의 행 수정완료` });  // 쿼리를 실행한 결과 반환
+
+    } catch (err) { // 오류일경우
+        console.error('Error connecting to Oracle DB', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+
+    } finally { // 항상 마지막에 실행 
+        if (connection) {
+            try {
+                await connection.close();
+            } catch (err) {
+                console.error('Error closing the connection', err);
+            }
+        }
+    }
+    
+});
 
 
 
@@ -148,6 +205,7 @@ app.post('/api/submitProduct', async (req, res) => {
 });
 
 // 테스트 연결
+
 testConnection();
 
 app.listen(port, () => {
