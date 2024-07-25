@@ -136,6 +136,7 @@ app.post('/api/update-quantity', async (req, res) => {
         
         console.log('Query Results:', result.rowsAffected);
         res.json({ message: `${result.rowsAffected}개의 행 수정완료` });  // 쿼리를 실행한 결과 반환
+        
 
     } catch (err) { // 오류일경우
         console.error('Error connecting to Oracle DB', err);
