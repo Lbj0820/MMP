@@ -64,6 +64,7 @@
             </tbody>
         </table>
         <button onclick="submitSelectedProducts()">입고</button>
+        
     </div>
 
     <script>
@@ -112,9 +113,11 @@
 
                 const result = await response.json();
                 alert(result.message);
+                
             } catch (error) {
                 alert('오류 발생: ' + error.message);
             }
+            location.reload();
         }
     </script>
 </body>

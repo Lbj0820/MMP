@@ -10,11 +10,39 @@
             margin: 20px;
         }
         .container {
-            width: 600px;
+            width: 800px;
             margin: 0 auto;
         }
-        .btn-container {
+        table {
+            width: 100%;
+            border-collapse: collapse;
             margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        .form-container {
+            margin-bottom: 20px;
+        }
+        .form-container label {
+            display: block;
+            margin-bottom: 5px;
+            width: 50%; /* 라벨의 가로 크기를 현재의 절반으로 설정 */
+        }
+        .form-container input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+        .form-container button {
+            width: 100%;
+            padding: 10px;
+            cursor: pointer;
         }
         #data-display {
             width: 100%;
@@ -32,8 +60,36 @@
         <div class="btn-container">
             <button onclick="fetchData()">조회</button>
             <a href="input.html"><button>입고 페이지로 이동</button></a>
+            <div id="data-display"></div>  
+
+            <div class="container">
+                <h2>물자 관리 - 조회 및 검색</h2>
+                <div class="form-container">
+                    <label for="item_id">ID</label>
+                    <input type="text" id="item_id" name="item_id">
+                    <label for="item_name">상품명</label>
+                    <input type="text" id="item_name" name="item_name">
+                    <label for="received_by">수령자</label>
+                    <input type="text" id="received_by" name="received_by">
+                    <label for="quantity">수량</label>
+                    <input type="number" id="quantity" name="quantity">
+                    <button onclick="searchItems()">검색</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>상품명</th>
+                            <th>수령자</th>
+                            <th>수량</th>
+                        </tr>
+                    </thead>
+                    <tbody id="product-table">
+                        <!-- 검색 결과가 여기에 추가됩니다 -->
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <div id="data-display"></div>
     </div>
 
     <script>
@@ -45,6 +101,30 @@
             } catch (error) {
                 document.getElementById('data-display').textContent = '오류 발생: ' + error.message;
             }
+        }
+
+        async function searchItems() {
+            const id = document.getElementById('item_id').value;
+            const name = document.getElementById('item_name').value;
+            const received_by = document.getElementById('received_by').value;
+            const quantity = document.getElementById('quantity').value;
+
+            const params = new URLSearchParams({ item_id, item_name, received_by, quantity });
+            const response = await fetch(`/api/searchItems?${params.toString()}`);
+            const products = await response.json();
+            const tableBody = document.getElementById('product-table');
+            tableBody.innerHTML = ''; 
+
+            products.forEach(product => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${product[0]}</td>
+                    <td>${product[1]}</td>
+                    <td>${product[2]}</td>
+                    <td>${product[3]}</td>
+                `;
+                tableBody.appendChild(row);
+            });
         }
     </script>
 </body>
