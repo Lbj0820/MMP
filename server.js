@@ -33,6 +33,10 @@ async function testConnection() {
     }
 }
 
+app.get('/api', async (req, res) => {
+    res.send("connecting server!\n");
+});
+
 app.get('/api/getData', async (req, res) => {
     let connection;
     try {
@@ -68,28 +72,17 @@ app.get('/api/searchItems', async (req, res) => {
         connection = await oracledb.getConnection(dbConfig); // DB 연결
         console.log('Connection to Oracle DB was successful!');
 
-        let sql = 'SELECT * FROM Inventory WHERE 1=1';
-        const binds = {};
+        // 바인드 변수를 사용한 쿼리
+        const sql = `SELECT * FROM Inventory WHERE 1=1`;
 
-        // 조건에 따른 쿼리 추가 및 바인드 변수 설정
-        if (id) {
-            sql += ' AND item_id = :id';
-            binds.id = id;
-        }
-        if (name) {
-            sql += ' AND item_name = :name';
-            binds.name = name;
-        }
-        if (received_by) {
-            sql += ' AND received_by = :received_by';
-            binds.received_by = received_by;
-        }
-        if (quantity) {
-            sql += ' AND quantity = :quantity';
-            binds.quantity = quantity;
-        }
+        //조건에 따른
+        if (id)             sql += `item_id = ${id}`;
+        if (name)           sql += `item_name = ${name}`;
+        if (received_by)    sql += `received_by = ${received_by}`;
+        if (quantity != 0)  sql += `quantity = ${quantity}`;
 
-        const result = await connection.execute(sql, binds);
+        const result = await connection.execute(sql);
+        
         res.json(result.rows);
 
     } catch (err) { // 오류일 경우
@@ -190,7 +183,7 @@ app.post('/api/submitProduct', async (req, res) => {
                 THEN 'TRUE'
                 ELSE 'FALSE'
             END AS item_exists
-            FROM dual;
+            FROM dual
         `;
 
         const result = await connection.execute(
