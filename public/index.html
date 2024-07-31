@@ -61,35 +61,36 @@
             <button onclick="fetchData()">조회</button>
             <a href="input.html"><button>입고 페이지로 이동</button></a>
             <div id="data-display"></div>  
-
-            <div class="container">
-                <h2>물자 관리 - 조회 및 검색</h2>
-                <div class="form-container">
-                    <label for="item_id">ID</label>
-                    <input type="text" id="item_id" name="item_id">
-                    <label for="item_name">상품명</label>
-                    <input type="text" id="item_name" name="item_name">
-                    <label for="received_by">수령자</label>
-                    <input type="text" id="received_by" name="received_by">
-                    <label for="quantity">수량</label>
-                    <input type="number" id="quantity" name="quantity">
-                    <button onclick="searchItems()">검색</button>
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>상품명</th>
-                            <th>수령자</th>
-                            <th>수량</th>
-                        </tr>
-                    </thead>
-                    <tbody id="product-table">
-                        <!-- 검색 결과가 여기에 추가됩니다 -->
-                    </tbody>
-                </table>
+        </div> 
+    
+        <div class="container">
+            <h2>물자 관리 - 조회 및 검색</h2>
+            <div class="form-container">
+                <label for="id">ID</label>
+                <input type="text" id="id" name="id">
+                <label for="name">상품명</label>
+                <input type="text" id="name" name="name">
+                <label for="received_by">수령자</label>
+                <input type="text" id="received_by" name="received_by">
+                <label for="quantity">수량</label>
+                <input type="number" id="quantity" name="quantity">
+                <button onclick="searchItems()">검색</button>
             </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>상품명</th>
+                        <th>수령자</th>
+                        <th>수량</th>
+                    </tr>
+                </thead>
+                <tbody id="product-table">
+                    <!-- 검색 결과가 여기에 추가됩니다 -->
+                </tbody>
+            </table>
         </div>
+
     </div>
 
     <script>
@@ -102,30 +103,44 @@
                 document.getElementById('data-display').textContent = '오류 발생: ' + error.message;
             }
         }
-
+        
         async function searchItems() {
-            const id = document.getElementById('item_id').value;
-            const name = document.getElementById('item_name').value;
-            const received_by = document.getElementById('received_by').value;
-            const quantity = document.getElementById('quantity').value;
+            const id = document.getElementById('id').value.trim();
+            const name = document.getElementById('name').value.trim();
+            const received_by = document.getElementById('received_by').value.trim();
+            const quantity = document.getElementById('quantity').value.trim();
 
-            const params = new URLSearchParams({ item_id, item_name, received_by, quantity });
-            const response = await fetch(`/api/searchItems?${params.toString()}`);
-            const products = await response.json();
-            console.log(products);
-            const tableBody = document.getElementById('product-table');
-            tableBody.innerHTML = ''; 
+            const params = new URLSearchParams();
+            if (id) params.append('id', id);
+            if (name) params.append('name', name);
+            if (received_by) params.append('received_by', received_by);
+            if (quantity) params.append('quantity', quantity);
+            console.log(params);
+            
+            try {
+                
+                const response = await fetch(`/api/searchItems?${params.getAll('key')}`);
+                
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                const products = await response.json();
+                const tableBody = document.getElementById('product-table');
+                tableBody.innerHTML = '';
 
-            products.forEach(product => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${product[0]}</td>
-                    <td>${product[1]}</td>
-                    <td>${product[2]}</td>
-                    <td>${product[3]}</td>
-                `;
-                tableBody.appendChild(row);
-            });
+                products.forEach(product => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${product[0]}</td>
+                        <td>${product[1]}</td>
+                        <td>${product[2]}</td>
+                        <td>${product[3]}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('검색 중 오류 발생:', error);
+            }
         }
     </script>
 </body>
